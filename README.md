@@ -78,3 +78,11 @@ const clonedBitmap = bitmap.clone();
   - **Iteration and Filtering:** `range(fn: (x: number) => boolean)`, `filter(fn: (x: number) => boolean)`
   - **Count and Extremes:** `count()`, `min()`, `max()`, `minZero()`, `maxZero()`
   - **Cloning:** `clone(): Bitmap`
+
+#### Note
+
+This library is designed for bitmap indexing operations and is not related to image processing. For more information on bitmap indexing, please refer to [Bitmap Index Wiki](https://en.wikipedia.org/wiki/Bitmap_index).
+
+---
+
+Feel free to contribute, report issues, or suggest improvements on [GitHub](https://github.com/yazmeyaa/bitmap-index).
