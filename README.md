@@ -1,4 +1,6 @@
 ### Bitmap-Index Library
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][downloads-url]
 
 This TypeScript library provides a bitmap implementation (`Bitmap`) that allows efficient manipulation of a bitmap data structure, useful for various indexing and set operations.
 
@@ -86,3 +88,9 @@ This library is designed for bitmap indexing operations and is not related to im
 ---
 
 Feel free to contribute, report issues, or suggest improvements on [GitHub](https://github.com/yazmeyaa/bitmap-index).
+
+
+[npm-image]: https://img.shields.io/npm/v/bitmap-index.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/bitmap-index
+[downloads-image]: https://img.shields.io/npm/dm/bitmap-index.svg?style=flat-square
+[downloads-url]: https://npmjs.org/package/bitmap-index
