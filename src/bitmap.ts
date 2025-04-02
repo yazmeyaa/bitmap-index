@@ -12,12 +12,8 @@ export class Bitmap implements IBitmap {
     this.bits = new Uint8Array(computeBitsArrayLength(x));
   }
 
-  protected getBits(): Uint8Array {
-    return this.bits;
-  }
-
   public grow(x: number): void {
-    const arrLength = computeBitsArrayLength(x);
+    const arrLength = Math.max(1, computeBitsArrayLength(x));
     if (arrLength <= this.bits.length) return;
     const prev = this.bits;
     this.bits = new Uint8Array(arrLength);
@@ -55,6 +51,7 @@ export class Bitmap implements IBitmap {
     }
     return count;
   }
+
   public and(bitmap: IBitmap): IBitmap {
     const otherBits = (bitmap as Bitmap).bits;
     const result = this.clone() as Bitmap;
@@ -116,6 +113,7 @@ export class Bitmap implements IBitmap {
       if (!needContinueIterating) break;
     }
   }
+
   public filter(fn: (x: number) => boolean): void {
     for (let i = 0; i < this.bits.length; i++) {
       for (let j = 0; j < 8; j++) {
@@ -126,6 +124,7 @@ export class Bitmap implements IBitmap {
       }
     }
   }
+
   public clear(): void {
     for (let i = 0; i < this.bits.length; i++) {
       this.bits[i] = 0;

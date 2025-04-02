@@ -2,13 +2,13 @@ import { Bitmap } from "./bitmap";
 
 describe("Bitmap", () => {
   test("Set", () => {
-    const x = 2;
-    const y = 4;
-    const bitmap = new Bitmap(32);
-    bitmap.set(x);
-    bitmap.set(y);
-    expect(bitmap.contains(x)).toBe(true);
-    expect(bitmap.contains(y)).toBe(true);
+    const bitmap = new Bitmap(0);
+    bitmap.set(0);
+    bitmap.set(1);
+    bitmap.set(2);
+    expect(bitmap.contains(0)).toBe(true);
+    expect(bitmap.contains(1)).toBe(true);
+    expect(bitmap.contains(2)).toBe(true);
   });
 
   test("Remove", () => {
