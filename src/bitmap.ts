@@ -100,14 +100,14 @@ export class Bitmap implements IBitmap {
     return result;
   }
 
-  public range(fn: (x: number) => boolean): void {
+  public range(fn: (x: number) => boolean | void): void {
     let needContinueIterating = true;
     for (let i = 0; i < this.bits.length; i++) {
       let x = this.bits[i];
       for (let j = 0; j < 8; j++) {
         const bit = (x >> j) & 1;
         if (bit === 0) continue;
-        needContinueIterating = fn(i * 8 + j);
+        needContinueIterating = fn(i * 8 + j) ?? true;
         if (!needContinueIterating) break;
       }
       if (!needContinueIterating) break;

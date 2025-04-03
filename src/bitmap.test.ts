@@ -68,7 +68,6 @@ describe("Bitmap", () => {
 
     bitmap.range((x) => {
       results.push(x);
-      return true;
     });
 
     expect(results).toEqual([2, 4, 6, 8]);
