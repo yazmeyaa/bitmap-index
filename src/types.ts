@@ -32,6 +32,6 @@ export interface IBitmap {
   minZero(): number;
 
   maxZero(): number;
-  
+
   [Symbol.iterator](): Iterator<number>;
 }
