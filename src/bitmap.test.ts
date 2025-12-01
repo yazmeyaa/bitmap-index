@@ -165,4 +165,42 @@ describe("Bitmap", () => {
     expect(bitmap.contains(3)).toBe(false);
     expect(bitmap.contains(4)).toBe(true);
   });
+
+  test("Generator iterator yields correct bits", () => {
+    const bitmap = new Bitmap(16);
+    bitmap.set(2);
+    bitmap.set(4);
+    bitmap.set(6);
+
+    const results: number[] = [];
+    for (const bit of bitmap) {
+      results.push(bit);
+    }
+
+    expect(results).toEqual([2, 4, 6]);
+  });
+
+  test("Spread operator works with Bitmap", () => {
+    const bitmap = new Bitmap(16);
+    bitmap.set(1);
+    bitmap.set(3);
+    bitmap.set(5);
+
+    const arr = [...bitmap];
+    expect(arr).toEqual([1, 3, 5]);
+  });
+
+  test("Empty bitmap yields no bits", () => {
+    const bitmap = new Bitmap(8);
+    const results = [...bitmap];
+    expect(results).toEqual([]);
+  });
+
+  test("Bitmap with all bits set yields correct sequence", () => {
+    const bitmap = new Bitmap(8);
+    for (let i = 0; i < 8; i++) bitmap.set(i);
+
+    const results = [...bitmap];
+    expect(results).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+  });
 });
