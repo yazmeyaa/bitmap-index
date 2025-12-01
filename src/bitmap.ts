@@ -12,6 +12,18 @@ export class Bitmap implements IBitmap {
     this.bits = new Uint8Array(computeBitsArrayLength(x));
   }
 
+  public *[Symbol.iterator](): Generator<number> {
+    for (let i = 0; i < this.bits.length; i++) {
+      const byte = this.bits[i];
+      if (byte === 0) continue;
+      for (let j = 0; j < 8; j++) {
+        if ((byte & (1 << j)) !== 0) {
+          yield i * 8 + j;
+        }
+      }
+    }
+  }
+
   public grow(x: number): void {
     const arrLength = Math.max(1, computeBitsArrayLength(x));
     if (arrLength <= this.bits.length) return;
