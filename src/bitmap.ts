@@ -23,7 +23,7 @@ export class Bitmap {
   }
 
   public grow(x: number): void {
-    const arrLength = Math.max(1, computeBitsArrayLength(x));
+    const arrLength = Math.max(1, computeBitsArrayLength(x + 1));
     if (arrLength <= this.bits.length) return;
     const prev = this.bits;
     this.bits = new Uint8Array(arrLength);
@@ -38,15 +38,15 @@ export class Bitmap {
 
   public remove(x: number): void {
     const idx = getBitPositionIndex(x);
-    if (!this.bits[idx]) return;
+    if (idx >= this.bits.length) return;
     const mask = getMask(getBitPosition(x));
     this.bits[idx] &= ~mask;
   }
 
   public contains(x: number): boolean {
-    const [idx, pos] = [getBitPositionIndex(x), getBitPosition(x)];
-    if (!this.bits[idx]) return false;
-    const mask = getMask(pos);
+    const idx = getBitPositionIndex(x);
+    if (idx >= this.bits.length) return false;
+    const mask = getMask(getBitPosition(x));
     return (this.bits[idx] & mask) === mask;
   }
 
@@ -71,6 +71,10 @@ export class Bitmap {
       result.bits[i] &= otherBits[i];
     }
 
+    for (let i = minlen; i < result.bits.length; i++) {
+      result.bits[i] = 0;
+    }
+
     return result;
   }
 
@@ -88,11 +92,19 @@ export class Bitmap {
 
   public or(bitmap: Bitmap): Bitmap {
     const otherBits = (bitmap as Bitmap).bits;
-    const result = this.clone() as Bitmap;
-    const minlen = Math.min(this.bits.length, otherBits.length);
+    let result = this.clone() as Bitmap;
 
-    for (let i = 0; i < minlen; i++) {
-      result.bits[i] |= otherBits[i];
+    if (otherBits.length > result.bits.length) {
+      const extended = new Uint8Array(otherBits.length);
+      extended.set(result.bits);
+      result.bits = extended;
+    }
+
+    const maxlen = Math.max(result.bits.length, otherBits.length);
+    for (let i = 0; i < maxlen; i++) {
+      const a = result.bits[i] ?? 0;
+      const b = otherBits[i] ?? 0;
+      result.bits[i] = a | b;
     }
 
     return result;
@@ -100,11 +112,19 @@ export class Bitmap {
 
   public xor(bitmap: Bitmap): Bitmap {
     const otherBits = (bitmap as Bitmap).bits;
-    const result = this.clone() as Bitmap;
-    const minlen = Math.min(this.bits.length, otherBits.length);
+    let result = this.clone() as Bitmap;
 
-    for (let i = 0; i < minlen; i++) {
-      result.bits[i] ^= otherBits[i];
+    if (otherBits.length > result.bits.length) {
+      const extended = new Uint8Array(otherBits.length);
+      extended.set(result.bits);
+      result.bits = extended;
+    }
+
+    const maxlen = Math.max(result.bits.length, otherBits.length);
+    for (let i = 0; i < maxlen; i++) {
+      const a = result.bits[i] ?? 0;
+      const b = otherBits[i] ?? 0;
+      result.bits[i] = a ^ b;
     }
 
     return result;
@@ -113,9 +133,9 @@ export class Bitmap {
   public range(fn: (x: number) => boolean | void): void {
     let needContinueIterating = true;
     for (let i = 0; i < this.bits.length; i++) {
-      let x = this.bits[i];
+      let byte = this.bits[i];
       for (let j = 0; j < 8; j++) {
-        const bit = (x >> j) & 1;
+        const bit = (byte >> j) & 1;
         if (bit === 0) continue;
         needContinueIterating = fn(i * 8 + j) ?? true;
         if (!needContinueIterating) break;
