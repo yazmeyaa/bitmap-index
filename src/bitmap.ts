@@ -1,11 +1,9 @@
-import { IBitmap } from "./types";
-
 const computeBitsArrayLength = (x: number): number => Math.ceil(x / 8);
 const getBitPositionIndex = (x: number): number => Math.floor(x / 8);
 const getBitPosition = (x: number): number => x % 8;
 const getMask = (bitIdx: number): number => 0b00000001 << bitIdx;
 
-export class Bitmap implements IBitmap {
+export class Bitmap {
   private bits: Uint8Array;
 
   constructor(x = 32) {
@@ -64,7 +62,7 @@ export class Bitmap implements IBitmap {
     return count;
   }
 
-  public and(bitmap: IBitmap): IBitmap {
+  public and(bitmap: Bitmap): Bitmap {
     const otherBits = (bitmap as Bitmap).bits;
     const result = this.clone() as Bitmap;
     const minlen = Math.min(this.bits.length, otherBits.length);
@@ -76,7 +74,7 @@ export class Bitmap implements IBitmap {
     return result;
   }
 
-  public andNot(bitmap: IBitmap): IBitmap {
+  public andNot(bitmap: Bitmap): Bitmap {
     const otherBits = (bitmap as Bitmap).bits;
     const result = this.clone() as Bitmap;
     const minlen = Math.min(this.bits.length, otherBits.length);
@@ -88,7 +86,7 @@ export class Bitmap implements IBitmap {
     return result;
   }
 
-  public or(bitmap: IBitmap): IBitmap {
+  public or(bitmap: Bitmap): Bitmap {
     const otherBits = (bitmap as Bitmap).bits;
     const result = this.clone() as Bitmap;
     const minlen = Math.min(this.bits.length, otherBits.length);
@@ -100,7 +98,7 @@ export class Bitmap implements IBitmap {
     return result;
   }
 
-  public xor(bitmap: IBitmap): IBitmap {
+  public xor(bitmap: Bitmap): Bitmap {
     const otherBits = (bitmap as Bitmap).bits;
     const result = this.clone() as Bitmap;
     const minlen = Math.min(this.bits.length, otherBits.length);
@@ -143,7 +141,7 @@ export class Bitmap implements IBitmap {
     }
   }
 
-  public clone(): IBitmap {
+  public clone(): Bitmap {
     const clonedBitmap = new Bitmap(this.bits.length * 8);
     clonedBitmap.bits.set(this.bits);
     return clonedBitmap;
