@@ -2,7 +2,13 @@
   "name": "bitmap-index",
   "private": false,
   "version": "1.0.1",
+  "description": "A small, zero-dependency bitmap/bitset implementation for fast index operations (and, or, xor, etc.)",
   "license": "MIT",
+  "author": "yazmeyaa",
+  "homepage": "https://github.com/yazmeyaa/bitmap-index#readme",
+  "bugs": {
+    "url": "https://github.com/yazmeyaa/bitmap-index/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yazmeyaa/bitmap-index.git"
@@ -11,9 +17,34 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=16"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "bitmap",
+    "bitset",
+    "bitmap-index",
+    "index",
+    "bit",
+    "typescript",
+    "javascript"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
