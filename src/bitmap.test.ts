@@ -210,11 +210,11 @@ describe("Bitmap", () => {
       bitmap.set(i);
     }
 
-    const resultString = "0101010101010101";
+    const resultString = "01010101 01010101";
 
     expect(bitmap.toString()).toEqual(resultString);
     expect(String(bitmap)).toEqual(resultString);
-    expect(`bitmap debug: ${bitmap}`).toEqual("bitmap debug: 0101010101010101")
+    expect(`bitmap debug: ${bitmap}`).toEqual(`bitmap debug: ${resultString}`)
 
     const bitmap2 = Bitmap.fromString(bitmap.toString());
     expect(bitmap2.toString()).toEqual(bitmap.toString());

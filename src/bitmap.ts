@@ -73,7 +73,9 @@ export class Bitmap {
    * @returns {string} Binary string representing the full contents of the bitmap.
   */
   public toString(): string {
-    return Array.from(this.bits).map((x) => x.toString(2).padStart(8, '0')).join('')
+    return Array.from(this.bits)
+      .map(x => x.toString(2).padStart(8, '0'))
+      .join(' ');
   }
 
   /**
@@ -86,14 +88,17 @@ export class Bitmap {
    * @throws {Error} If the input length is not divisible by 8.
   */
   static fromString(s: string): Bitmap {
-    if (s.length % 8 !== 0) {
+    // allow "00000001 00000010", "0000000100000010", etc.
+    const cleaned = s.replace(/\s+/g, '');
+
+    if (cleaned.length % 8 !== 0) {
       throw new Error("Bitmap string must be aligned to bytes (len % 8 == 0)");
     }
 
-    const bytes = new Uint8Array(s.length / 8);
+    const bytes = new Uint8Array(cleaned.length / 8);
 
     for (let i = 0; i < bytes.length; i++) {
-      const byteStr = s.slice(i * 8, i * 8 + 8);
+      const byteStr = cleaned.slice(i * 8, i * 8 + 8);
       bytes[i] = parseInt(byteStr, 2);
     }
 
