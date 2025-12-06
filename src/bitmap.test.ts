@@ -203,4 +203,20 @@ describe("Bitmap", () => {
     const results = [...bitmap];
     expect(results).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
   });
+
+  test("To string converting", () => {
+    const bitmap = new Bitmap(16);
+    for (let i = 0; i < 16; i += 2) {
+      bitmap.set(i);
+    }
+
+    const resultString = "0101010101010101";
+
+    expect(bitmap.toString()).toEqual(resultString);
+    expect(String(bitmap)).toEqual(resultString);
+    expect(`bitmap debug: ${bitmap}`).toEqual("bitmap debug: 0101010101010101")
+
+    const bitmap2 = Bitmap.fromString(bitmap.toString());
+    expect(bitmap2.toString()).toEqual(bitmap.toString());
+  })
 });

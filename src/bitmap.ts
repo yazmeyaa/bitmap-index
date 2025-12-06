@@ -44,7 +44,7 @@ export class Bitmap {
    *
    * @param {number} [x=32] - Initial capacity in bits (defaults to 32).
    */
-  constructor(x = 32) {
+  constructor(x: number = 32) {
     this.bits = new Uint8Array(computeBitsArrayLength(x));
   }
 
@@ -63,6 +63,43 @@ export class Bitmap {
         }
       }
     }
+  }
+
+  /**
+   * Serialize the bitmap into a compact binary-string representation.
+   * Each byte of the underlying storage is converted to 8 characters ('0'/'1'),
+   * preserving byte order and padding leading zeros to maintain alignment.
+   *
+   * @returns {string} Binary string representing the full contents of the bitmap.
+  */
+  public toString(): string {
+    return Array.from(this.bits).map((x) => x.toString(2).padStart(8, '0')).join('')
+  }
+
+  /**
+   * Construct a Bitmap instance from its binary-string representation.
+   * The input string must be byte-aligned: its length must be divisible by 8.
+   * Each 8-character segment is parsed as a single byte (big-endian bit order).
+   *
+   * @param {string} s - Binary string produced by `toString()` or compatible formatter.
+   * @returns {Bitmap} New Bitmap instance containing the parsed bits.
+   * @throws {Error} If the input length is not divisible by 8.
+  */
+  static fromString(s: string): Bitmap {
+    if (s.length % 8 !== 0) {
+      throw new Error("Bitmap string must be aligned to bytes (len % 8 == 0)");
+    }
+
+    const bytes = new Uint8Array(s.length / 8);
+
+    for (let i = 0; i < bytes.length; i++) {
+      const byteStr = s.slice(i * 8, i * 8 + 8);
+      bytes[i] = parseInt(byteStr, 2);
+    }
+
+    const b = new Bitmap(bytes.length * 8);
+    b.bits = bytes;
+    return b;
   }
 
   /**
