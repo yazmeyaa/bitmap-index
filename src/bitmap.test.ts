@@ -214,9 +214,9 @@ describe("Bitmap", () => {
 
     expect(bitmap.toString()).toEqual(resultString);
     expect(String(bitmap)).toEqual(resultString);
-    expect(`bitmap debug: ${bitmap}`).toEqual(`bitmap debug: ${resultString}`)
+    expect(`bitmap debug: ${bitmap}`).toEqual(`bitmap debug: ${resultString}`);
 
     const bitmap2 = Bitmap.fromString(bitmap.toString());
     expect(bitmap2.toString()).toEqual(bitmap.toString());
-  })
+  });
 });

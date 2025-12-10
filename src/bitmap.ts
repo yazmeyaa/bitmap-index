@@ -71,11 +71,11 @@ export class Bitmap {
    * preserving byte order and padding leading zeros to maintain alignment.
    *
    * @returns {string} Binary string representing the full contents of the bitmap.
-  */
+   */
   public toString(): string {
     return Array.from(this.bits)
-      .map(x => x.toString(2).padStart(8, '0'))
-      .join(' ');
+      .map((x) => x.toString(2).padStart(8, "0"))
+      .join(" ");
   }
 
   /**
@@ -86,10 +86,10 @@ export class Bitmap {
    * @param {string} s - Binary string produced by `toString()` or compatible formatter.
    * @returns {Bitmap} New Bitmap instance containing the parsed bits.
    * @throws {Error} If the input length is not divisible by 8.
-  */
+   */
   static fromString(s: string): Bitmap {
     // allow "00000001 00000010", "0000000100000010", etc.
-    const cleaned = s.replace(/\s+/g, '');
+    const cleaned = s.replace(/\s+/g, "");
 
     if (cleaned.length % 8 !== 0) {
       throw new Error("Bitmap string must be aligned to bytes (len % 8 == 0)");
@@ -122,12 +122,12 @@ export class Bitmap {
   }
 
   /**
-     * Set the bit at index `x` to 1.
-     * Automatically grows the bitmap if necessary.
-     * **Mutates this bitmap** in-place.
-     * @param {number} x - Bit index (0-based).
-     * @returns {this} The instance itself (for method chaining).
-     */
+   * Set the bit at index `x` to 1.
+   * Automatically grows the bitmap if necessary.
+   * **Mutates this bitmap** in-place.
+   * @param {number} x - Bit index (0-based).
+   * @returns {this} The instance itself (for method chaining).
+   */
   public set(x: number): this {
     const idx = getBitPositionIndex(x);
     if (idx >= this.bits.length) this.grow(x);
@@ -136,12 +136,12 @@ export class Bitmap {
   }
 
   /**
-     * Clear the bit at index `x` (set to 0).
-     * No-op if the index is outside current capacity.
-     * **Mutates this bitmap** in-place.
-     * @param {number} x - Bit index (0-based).
-     * @returns {this} The instance itself (for method chaining).
-     */
+   * Clear the bit at index `x` (set to 0).
+   * No-op if the index is outside current capacity.
+   * **Mutates this bitmap** in-place.
+   * @param {number} x - Bit index (0-based).
+   * @returns {this} The instance itself (for method chaining).
+   */
   public remove(x: number): this {
     const idx = getBitPositionIndex(x);
     if (idx >= this.bits.length) return this;
@@ -178,11 +178,11 @@ export class Bitmap {
   }
 
   /**
-  * Bitwise AND with another bitmap.
-  * **Mutates this bitmap** — performs the operation in-place and clears extra bytes if needed.
-  * @param {Bitmap} bitmap - Other bitmap to AND with.
-  * @returns {this} The instance itself (for method chaining).
-  */
+   * Bitwise AND with another bitmap.
+   * **Mutates this bitmap** — performs the operation in-place and clears extra bytes if needed.
+   * @param {Bitmap} bitmap - Other bitmap to AND with.
+   * @returns {this} The instance itself (for method chaining).
+   */
   public and(bitmap: Bitmap): this {
     const other = bitmap.bits;
     const minlen = Math.min(this.bits.length, other.length);
@@ -197,11 +197,11 @@ export class Bitmap {
   }
 
   /**
-     * Bitwise AND NOT (this = this & ~bitmap).
-     * **Mutates this bitmap** in-place.
-     * @param {Bitmap} bitmap - Bitmap whose set bits will be subtracted.
-     * @returns {this} The instance itself (for method chaining).
-     */
+   * Bitwise AND NOT (this = this & ~bitmap).
+   * **Mutates this bitmap** in-place.
+   * @param {Bitmap} bitmap - Bitmap whose set bits will be subtracted.
+   * @returns {this} The instance itself (for method chaining).
+   */
   public andNot(bitmap: Bitmap): this {
     const other = bitmap.bits;
     const minlen = Math.min(this.bits.length, other.length);
@@ -213,11 +213,11 @@ export class Bitmap {
   }
 
   /**
-     * Bitwise OR (union) with another bitmap.
-     * **Mutates this bitmap** in-place and grows it if necessary.
-     * @param {Bitmap} bitmap - Other bitmap to OR with.
-     * @returns {this} The instance itself (for method chaining).
-     */
+   * Bitwise OR (union) with another bitmap.
+   * **Mutates this bitmap** in-place and grows it if necessary.
+   * @param {Bitmap} bitmap - Other bitmap to OR with.
+   * @returns {this} The instance itself (for method chaining).
+   */
   public or(bitmap: Bitmap): this {
     const other = bitmap.bits;
 
@@ -236,11 +236,11 @@ export class Bitmap {
     return this;
   }
   /**
-     * Bitwise XOR with another bitmap.
-     * **Mutates this bitmap** in-place and grows it if necessary.
-     * @param {Bitmap} bitmap - Other bitmap to XOR with.
-     * @returns {this} The instance itself (for method chaining).
-     */
+   * Bitwise XOR with another bitmap.
+   * **Mutates this bitmap** in-place and grows it if necessary.
+   * @param {Bitmap} bitmap - Other bitmap to XOR with.
+   * @returns {this} The instance itself (for method chaining).
+   */
   public xor(bitmap: Bitmap): this {
     const other = bitmap.bits;
 
@@ -280,11 +280,11 @@ export class Bitmap {
   }
 
   /**
-     * Remove bits for which the predicate returns `false`.
-     * **Mutates this bitmap** in-place.
-     * @param {(bitIndex: number) => boolean} fn - Predicate; bit is cleared if `false` is returned.
-     * @returns {void}
-     */
+   * Remove bits for which the predicate returns `false`.
+   * **Mutates this bitmap** in-place.
+   * @param {(bitIndex: number) => boolean} fn - Predicate; bit is cleared if `false` is returned.
+   * @returns {void}
+   */
   public filter(fn: (x: number) => boolean): void {
     for (let i = 0; i < this.bits.length; i++) {
       for (let j = 0; j < 8; j++) {
@@ -297,10 +297,10 @@ export class Bitmap {
   }
 
   /**
-     * Clear all bits in the bitmap (set everything to 0).
-     * **Mutates this bitmap** in-place.
-     * @returns {void}
-     */
+   * Clear all bits in the bitmap (set everything to 0).
+   * **Mutates this bitmap** in-place.
+   * @returns {void}
+   */
   public clear(): void {
     for (let i = 0; i < this.bits.length; i++) {
       this.bits[i] = 0;
