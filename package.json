@@ -1,7 +1,7 @@
 {
   "name": "bitmap-index",
   "private": false,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A small, zero-dependency bitmap/bitset implementation for fast index operations (and, or, xor, etc.)",
   "license": "MIT",
   "author": "yazmeyaa",
