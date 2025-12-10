@@ -122,28 +122,31 @@ export class Bitmap {
   }
 
   /**
-   * Set the bit at index `x` to 1.
-   * Automatically grows the internal buffer if necessary.
-   * @param {number} x - Bit index to set (0-based).
-   * @returns {void}
-   */
-  public set(x: number): void {
+     * Set the bit at index `x` to 1.
+     * Automatically grows the bitmap if necessary.
+     * **Mutates this bitmap** in-place.
+     * @param {number} x - Bit index (0-based).
+     * @returns {this} The instance itself (for method chaining).
+     */
+  public set(x: number): this {
     const idx = getBitPositionIndex(x);
     if (idx >= this.bits.length) this.grow(x);
     this.bits[idx] |= getMask(getBitPosition(x));
+    return this;
   }
 
   /**
-   * Clear the bit at index `x` (set to 0).
-   * If `x` is beyond current capacity, the call is a no-op.
-   * @param {number} x - Bit index to clear (0-based).
-   * @returns {void}
-   */
-  public remove(x: number): void {
+     * Clear the bit at index `x` (set to 0).
+     * No-op if the index is outside current capacity.
+     * **Mutates this bitmap** in-place.
+     * @param {number} x - Bit index (0-based).
+     * @returns {this} The instance itself (for method chaining).
+     */
+  public remove(x: number): this {
     const idx = getBitPositionIndex(x);
-    if (idx >= this.bits.length) return;
-    const mask = getMask(getBitPosition(x));
-    this.bits[idx] &= ~mask;
+    if (idx >= this.bits.length) return this;
+    this.bits[idx] &= ~getMask(getBitPosition(x));
+    return this;
   }
 
   /**
@@ -175,94 +178,85 @@ export class Bitmap {
   }
 
   /**
-   * Bitwise AND with another bitmap. Returns a new Bitmap containing the intersection.
-   * The result's capacity is equal to the left-hand bitmap's capacity (cloned from `this`).
-   * @param {Bitmap} bitmap - Other bitmap to AND with.
-   * @returns {Bitmap} New Bitmap representing this & bitmap.
-   */
-  public and(bitmap: Bitmap): Bitmap {
-    const otherBits = (bitmap as Bitmap).bits;
-    const result = this.clone() as Bitmap;
-    const minlen = Math.min(this.bits.length, otherBits.length);
+  * Bitwise AND with another bitmap.
+  * **Mutates this bitmap** — performs the operation in-place and clears extra bytes if needed.
+  * @param {Bitmap} bitmap - Other bitmap to AND with.
+  * @returns {this} The instance itself (for method chaining).
+  */
+  public and(bitmap: Bitmap): this {
+    const other = bitmap.bits;
+    const minlen = Math.min(this.bits.length, other.length);
 
     for (let i = 0; i < minlen; i++) {
-      result.bits[i] &= otherBits[i];
+      this.bits[i] &= other[i];
     }
-
-    for (let i = minlen; i < result.bits.length; i++) {
-      result.bits[i] = 0;
+    for (let i = minlen; i < this.bits.length; i++) {
+      this.bits[i] = 0;
     }
-
-    return result;
+    return this;
   }
 
   /**
-   * Bitwise AND NOT (this & ~bitmap). Returns a new Bitmap.
-   * @param {Bitmap} bitmap - Other bitmap to subtract from this.
-   * @returns {Bitmap} New Bitmap representing this & ~bitmap.
-   */
-  public andNot(bitmap: Bitmap): Bitmap {
-    const otherBits = (bitmap as Bitmap).bits;
-    const result = this.clone() as Bitmap;
-    const minlen = Math.min(this.bits.length, otherBits.length);
+     * Bitwise AND NOT (this = this & ~bitmap).
+     * **Mutates this bitmap** in-place.
+     * @param {Bitmap} bitmap - Bitmap whose set bits will be subtracted.
+     * @returns {this} The instance itself (for method chaining).
+     */
+  public andNot(bitmap: Bitmap): this {
+    const other = bitmap.bits;
+    const minlen = Math.min(this.bits.length, other.length);
 
     for (let i = 0; i < minlen; i++) {
-      result.bits[i] &= ~otherBits[i];
+      this.bits[i] &= ~other[i];
     }
-
-    return result;
+    return this;
   }
 
   /**
-   * Bitwise OR (union) with another bitmap. Returns a new Bitmap.
-   * The resulting bitmap will be large enough to contain bits from both operands.
-   * @param {Bitmap} bitmap - Other bitmap to OR with.
-   * @returns {Bitmap} New Bitmap representing this | bitmap.
-   */
-  public or(bitmap: Bitmap): Bitmap {
-    const otherBits = (bitmap as Bitmap).bits;
-    let result = this.clone() as Bitmap;
+     * Bitwise OR (union) with another bitmap.
+     * **Mutates this bitmap** in-place and grows it if necessary.
+     * @param {Bitmap} bitmap - Other bitmap to OR with.
+     * @returns {this} The instance itself (for method chaining).
+     */
+  public or(bitmap: Bitmap): this {
+    const other = bitmap.bits;
 
-    if (otherBits.length > result.bits.length) {
-      const extended = new Uint8Array(otherBits.length);
-      extended.set(result.bits);
-      result.bits = extended;
+    if (other.length > this.bits.length) {
+      const newArr = new Uint8Array(other.length);
+      newArr.set(this.bits);
+      this.bits = newArr;
     }
 
-    const maxlen = Math.max(result.bits.length, otherBits.length);
+    const maxlen = Math.max(this.bits.length, other.length);
     for (let i = 0; i < maxlen; i++) {
-      const a = result.bits[i] ?? 0;
-      const b = otherBits[i] ?? 0;
-      result.bits[i] = a | b;
+      const a = this.bits[i] ?? 0;
+      const b = other[i] ?? 0;
+      this.bits[i] = a | b;
     }
-
-    return result;
+    return this;
   }
-
   /**
-   * Bitwise XOR (symmetric difference) with another bitmap. Returns a new Bitmap.
-   * The resulting bitmap will be large enough to contain bits from both operands.
-   * @param {Bitmap} bitmap - Other bitmap to XOR with.
-   * @returns {Bitmap} New Bitmap representing this ^ bitmap.
-   */
-  public xor(bitmap: Bitmap): Bitmap {
-    const otherBits = (bitmap as Bitmap).bits;
-    let result = this.clone() as Bitmap;
+     * Bitwise XOR with another bitmap.
+     * **Mutates this bitmap** in-place and grows it if necessary.
+     * @param {Bitmap} bitmap - Other bitmap to XOR with.
+     * @returns {this} The instance itself (for method chaining).
+     */
+  public xor(bitmap: Bitmap): this {
+    const other = bitmap.bits;
 
-    if (otherBits.length > result.bits.length) {
-      const extended = new Uint8Array(otherBits.length);
-      extended.set(result.bits);
-      result.bits = extended;
+    if (other.length > this.bits.length) {
+      const newArr = new Uint8Array(other.length);
+      newArr.set(this.bits);
+      this.bits = newArr;
     }
 
-    const maxlen = Math.max(result.bits.length, otherBits.length);
+    const maxlen = Math.max(this.bits.length, other.length);
     for (let i = 0; i < maxlen; i++) {
-      const a = result.bits[i] ?? 0;
-      const b = otherBits[i] ?? 0;
-      result.bits[i] = a ^ b;
+      const a = this.bits[i] ?? 0;
+      const b = other[i] ?? 0;
+      this.bits[i] = a ^ b;
     }
-
-    return result;
+    return this;
   }
 
   /**
@@ -286,10 +280,11 @@ export class Bitmap {
   }
 
   /**
-   * Remove bits for which `fn(bitIndex)` returns false. Mutates this bitmap.
-   * @param {(x: number) => boolean} fn - Predicate called for each set bit index; if it returns false the bit is cleared.
-   * @returns {void}
-   */
+     * Remove bits for which the predicate returns `false`.
+     * **Mutates this bitmap** in-place.
+     * @param {(bitIndex: number) => boolean} fn - Predicate; bit is cleared if `false` is returned.
+     * @returns {void}
+     */
   public filter(fn: (x: number) => boolean): void {
     for (let i = 0; i < this.bits.length; i++) {
       for (let j = 0; j < 8; j++) {
@@ -302,9 +297,10 @@ export class Bitmap {
   }
 
   /**
-   * Clear all bits (set all to zero).
-   * @returns {void}
-   */
+     * Clear all bits in the bitmap (set everything to 0).
+     * **Mutates this bitmap** in-place.
+     * @returns {void}
+     */
   public clear(): void {
     for (let i = 0; i < this.bits.length; i++) {
       this.bits[i] = 0;
