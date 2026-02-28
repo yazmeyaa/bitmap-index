@@ -219,4 +219,49 @@ describe("Bitmap", () => {
     const bitmap2 = Bitmap.fromString(bitmap.toString());
     expect(bitmap2.toString()).toEqual(bitmap.toString());
   });
+
+  test("containsAll returns true when all bits are set", () => {
+    const a = new Bitmap(8);
+    a.set(0).set(2).set(4).set(6);
+
+    const b = new Bitmap(8);
+    b.set(0).set(4);
+
+    expect(a.containsAll(b)).toBe(true);
+  });
+
+  test("containsAll returns false when some bits are missing", () => {
+    const a = new Bitmap(8);
+    a.set(0).set(2);
+
+    const b = new Bitmap(8);
+    b.set(0).set(4);
+
+    expect(a.containsAll(b)).toBe(false);
+  });
+
+  test("containsAll returns true for empty bitmap", () => {
+    const a = new Bitmap(8);
+    a.set(1).set(3);
+
+    const b = new Bitmap(8);
+
+    expect(a.containsAll(b)).toBe(true);
+  });
+
+  test("containsAll returns true when comparing bitmap with itself", () => {
+    const a = new Bitmap(8);
+    a.set(1).set(3);
+
+    expect(a.containsAll(a)).toBe(true);
+  });
+
+  test("containsAll works with single-bit bitmaps", () => {
+    const a = new Bitmap(8).set(5);
+    const b = new Bitmap(8).set(5);
+    const c = new Bitmap(8).set(6);
+
+    expect(a.containsAll(b)).toBe(true);
+    expect(a.containsAll(c)).toBe(false);
+  });
 });

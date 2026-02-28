@@ -383,4 +383,16 @@ export class Bitmap {
     }
     return -1;
   }
+
+  /**
+   * Return whether all bits set in `other` are also set in this bitmap.
+   * @param {Bitmap} other - Bitmap to check against
+   * @returns {boolean} True if every set bit in `other` is also set in this bitmap
+   */
+  public containsAll(other: Bitmap): boolean {
+    for (const bit of other) {
+      if (!this.contains(bit)) return false;
+    }
+    return true;
+  }
 }
